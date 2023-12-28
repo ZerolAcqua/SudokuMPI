@@ -1,8 +1,11 @@
 #pragma once
+#include <math.h>
+
 
 typedef unsigned char num_t;
-typedef unsigned short cadi_t;
+typedef int cadi_t;
 
+template <int Rank>
 class Sudoku
 {
 private:
@@ -20,12 +23,15 @@ private:
 	//	|9 1 2|3 4 5|6 7 8|
 	//  #-----------------#
 	//  left to right, then top to bottom
-	num_t mData[81] = { 0 };    // 0 for empty
-	cadi_t mCadi[81] = { 0 };			 // candidates, one cell has 9 bit for 9 numbers
-	bool isKnown[81] = { 0 };
+	unsigned char mRank = Rank;
+	unsigned char mBlkSize = int( round(sqrt(Rank)));
+    unsigned short mTolCell = Rank * Rank;
+	num_t mData[Rank * Rank] = { 0 };		// 0 for empty
+	cadi_t mCadi[Rank * Rank] = { 0 };		// candidates, one cell has 9 bit for 9 numbers
+	bool isKnown[Rank * Rank] = { 0 };
 public:
 	Sudoku();
-	Sudoku(const char* str);
+	Sudoku(const char str[Rank * Rank]);
 	~Sudoku() = default;
 
 	void printSudoku();

@@ -1,43 +1,47 @@
 #include "SudokuSolver.h"
 
-SudokuSolver::SudokuSolver(Sudoku sudoku) {
+template <int Rank>
+SudokuSolver<Rank>::SudokuSolver(Sudoku<Rank> sudoku) {
 	mSudoku = sudoku;
 }
 
-SudokuSolver::~SudokuSolver() = default;
+template <int Rank>
+SudokuSolver<Rank>::~SudokuSolver() = default;
 
-bool SudokuSolver::solve()
+template <int Rank>
+bool SudokuSolver<Rank>::solve()
 {
 	mSudoku.calcCadi();
 	mIsSolved = backTracking();
 	return mIsSolved;
 }
 
-bool SudokuSolver::backTracking(int index)
+template <int Rank>
+bool SudokuSolver<Rank>::backTracking(int index)
 {
 
 	int curIdx = index;
 	// find the first unknown cell
-	for (; curIdx < 81; curIdx++) {
+	for (; curIdx < mTolCell; curIdx++) {
 		if (!mSudoku.isCellKnown(curIdx)) {
 			break;
 		}
 	}
-	
+
 	// if all cells are known, then return true
-	if (curIdx == 81) {
+	if (curIdx == mTolCell) {
 		return true;
 	}
 
 	// try all candidates
-	for (int i = 1; i <= 9; i++) {
+	for (int i = 1; i <= mRank; i++) {
 		if (mSudoku.isCadiExist(curIdx, i)) {
 			// try this candidate
 			if (mSudoku.validateCell(curIdx, i)) {
 				// if this candidate is valid, then try next cell
 				mSudoku.setCell(curIdx, i);
 				mSudoku.setCellKnown(curIdx);
-				if (backTracking(curIdx+1)) {
+				if (backTracking(curIdx + 1)) {
 					return true;
 				}
 				// if this candidate is invalid, then try next candidate
@@ -49,3 +53,7 @@ bool SudokuSolver::backTracking(int index)
 
 	return false;
 }
+
+template class SudokuSolver<9>;
+template class SudokuSolver<16>;
+template class SudokuSolver<25>;
