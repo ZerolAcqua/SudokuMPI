@@ -9,9 +9,9 @@ template <int Rank>
 SudokuSolver<Rank>::~SudokuSolver() = default;
 
 template <int Rank>
-bool SudokuSolver<Rank>::solve()
+bool SudokuSolver<Rank>::solve(PreProc preProc)
 {
-	mSudoku.calcCadi();
+	mSudoku.calcCadi(preProc);
 	mIsSolved = backTracking();
 	return mIsSolved;
 }

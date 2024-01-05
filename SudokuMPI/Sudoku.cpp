@@ -215,7 +215,7 @@ bool Sudoku<Rank>::isCadiExist(int row, int col, num_t num)
 }
 
 template <int Rank>
-void Sudoku<Rank>::calcCadi()
+void Sudoku<Rank>::calcCadi(PreProc preProc)
 {
 	// reset all candidates
 	for (int i = 0; i < mTolCell; i++)
@@ -228,40 +228,48 @@ void Sudoku<Rank>::calcCadi()
 			setCadi(i, 0x0);
 		}
 	}
-
-	// remove candidates from same row
-	for (int i = 0; i < mTolCell; i++) {
-		if (isKnown[i]) {
-			int row = i / mRank;
-			for (int j = 0; j < mRank; j++) {
-				removeCadi(row, j, mData[i]);
+	switch (preProc)
+	{
+	case PreProc::None:
+		break;
+	case PreProc::CalCadi:
+		// remove candidates from same row
+		for (int i = 0; i < mTolCell; i++) {
+			if (isKnown[i]) {
+				int row = i / mRank;
+				for (int j = 0; j < mRank; j++) {
+					removeCadi(row, j, mData[i]);
+				}
 			}
 		}
-	}
 
-	// remove candidates from same col
-	for (int i = 0; i < mTolCell; i++) {
-		if (isKnown[i]) {
-			int col = i % mRank;
-			for (int j = 0; j < mRank; j++) {
-				removeCadi(j, col, mData[i]);
+		// remove candidates from same col
+		for (int i = 0; i < mTolCell; i++) {
+			if (isKnown[i]) {
+				int col = i % mRank;
+				for (int j = 0; j < mRank; j++) {
+					removeCadi(j, col, mData[i]);
+				}
 			}
 		}
-	}
 
-	// remove candidates from same block
-	for (int i = 0; i < mTolCell; i++) {
-		if (isKnown[i]) {
-			int row = i / mRank;
-			int col = i % mRank;
-			int blockRow = row / mBlkSize;
-			int blockCol = col / mBlkSize;
-			for (int j = 0; j < mRank; j++) {
-				int r = blockRow * mBlkSize + j / mBlkSize;
-				int c = blockCol * mBlkSize + j % mBlkSize;
-				removeCadi(r, c, mData[i]);
+		// remove candidates from same block
+		for (int i = 0; i < mTolCell; i++) {
+			if (isKnown[i]) {
+				int row = i / mRank;
+				int col = i % mRank;
+				int blockRow = row / mBlkSize;
+				int blockCol = col / mBlkSize;
+				for (int j = 0; j < mRank; j++) {
+					int r = blockRow * mBlkSize + j / mBlkSize;
+					int c = blockCol * mBlkSize + j % mBlkSize;
+					removeCadi(r, c, mData[i]);
+				}
 			}
 		}
+		break;
+	default:
+		break;
 	}
 }
 

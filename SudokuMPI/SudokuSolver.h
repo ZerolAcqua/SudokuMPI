@@ -14,7 +14,7 @@ public:
 	SudokuSolver(Sudoku<Rank> sudoku);
 	~SudokuSolver();
 
-	bool solve();
+	bool solve(PreProc preProc = PreProc.CalCadi);
 	bool isSolved() { return mIsSolved; }
 	Sudoku<Rank> getSudoku() { return mSudoku; }
 private:

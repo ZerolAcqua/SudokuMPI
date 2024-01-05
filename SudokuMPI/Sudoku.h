@@ -5,6 +5,11 @@
 typedef unsigned char num_t;
 typedef int cadi_t;
 
+enum class PreProc {
+	None = 0,
+	CalCadi = 1,
+};
+
 template <int Rank>
 class Sudoku
 {
@@ -24,8 +29,8 @@ private:
 	//  #-----------------#
 	//  left to right, then top to bottom
 	unsigned char mRank = Rank;
-	unsigned char mBlkSize = int( round(sqrt(Rank)));
-    unsigned short mTolCell = Rank * Rank;
+	unsigned char mBlkSize = int(round(sqrt(Rank)));
+	unsigned short mTolCell = Rank * Rank;
 	num_t mData[Rank * Rank] = { 0 };		// 0 for empty
 	cadi_t mCadi[Rank * Rank] = { 0 };		// candidates, one cell has 9 bit for 9 numbers
 	bool isKnown[Rank * Rank] = { 0 };
@@ -60,7 +65,7 @@ public:
 	bool isCadiExist(int row, int col, num_t num);
 
 	// calculate candidates
-	void calcCadi();
+	void calcCadi(PreProc preProc = PreProc::CalCadi);
 	bool validateCell(int index, num_t num);
 	bool validateCell(int row, int col, num_t num);
 
