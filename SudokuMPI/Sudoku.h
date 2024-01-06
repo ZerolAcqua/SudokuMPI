@@ -33,8 +33,9 @@ private:
 	unsigned short mTolCell = Rank * Rank;
 	num_t mData[Rank * Rank] = { 0 };		// 0 for empty
 	cadi_t mCadi[Rank * Rank] = { 0 };		// candidates, one cell has 9 bit for 9 numbers
-	bool isKnown[Rank * Rank] = { 0 };
 public:
+	bool isKnown[Rank * Rank] = { 0 };
+
 	Sudoku();
 	Sudoku(const char str[Rank * Rank]);
 	~Sudoku() = default;

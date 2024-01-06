@@ -181,7 +181,6 @@ bool Sudoku<Rank>::isCellKnown(int row, int col)
 	return isCellKnown(rc2idx(row, col));
 }
 
-
 template <int Rank>
 void Sudoku<Rank>::removeCadi(int index, num_t num)
 {
