@@ -13,10 +13,77 @@ template <int Rank>
 bool SudokuSolver<Rank>::solve(PreProc preProc)
 {
 	mSudoku.calcCadi(preProc);
-	//mIsSolved = backTracking();
-	mIsSolved = DFS();
-	return mIsSolved;
+	mIsSolved = backTracking();
+	mIsFinished = true;
+	return mIsFinished;
 }
+// don't calculate cadi automatically
+// make sure that cadi is already calculated
+template <int Rank>
+bool SudokuSolver<Rank>::solveN(int searchNum)
+{
+	mIsFinished = DFSN(searchNum);
+	return mIsFinished;
+}
+
+template <int Rank>
+std::queue<std::string> SudokuSolver<Rank>::splitSubSum(int subNum)
+{
+	if (subNum == 1) {
+		std::queue<std::string> queStr;
+		queStr.push(mSudoku.toString());
+		return queStr;
+	}
+
+	std::queue<Sudoku<Rank>> queSudoku;
+	mSudoku.calcCadi(PreProc::CalCadi);
+	queSudoku.push(mSudoku);
+
+	unsigned short curIdx = 0;
+	unsigned short lastIdx = 0;
+
+	// BFS to find enough sub sudoku
+	while (true) {
+		Sudoku<Rank> sudoku = queSudoku.front();
+
+		// find the first unknown cell
+		for (; curIdx < mTolCell; curIdx++) {
+			if (!sudoku.isCellKnown(curIdx)) {
+				break;
+			}
+		}
+		if (lastIdx != curIdx && queSudoku.size() >= subNum) {
+			break;
+		}
+
+		queSudoku.pop();
+		lastIdx = curIdx;
+
+		// try all candidates
+		for (num_t i = 1; i <= mRank; i++) {
+			if (sudoku.isCadiExist(curIdx, i)) {
+				// try this candidate
+				if (sudoku.validateCell(curIdx, i)) {
+					// if this candidate is valid, then try next cell
+					sudoku.setCell(curIdx, i);
+					sudoku.setCellKnown(curIdx);
+					queSudoku.push(sudoku);
+					// restore sudoku state
+					sudoku.setCell(curIdx, 0);
+					sudoku.setCellKnown(curIdx, false);
+				}
+			}
+		}
+	}
+
+	std::queue<std::string> queStr;
+	while (!queSudoku.empty()) {
+		queStr.push(queSudoku.front().toString());
+		queSudoku.pop();
+	}
+	return queStr;
+}
+
 
 template <int Rank>
 bool SudokuSolver<Rank>::backTracking(int index)
@@ -32,6 +99,8 @@ bool SudokuSolver<Rank>::backTracking(int index)
 
 	// if all cells are known, then return true
 	if (curIdx == mTolCell) {
+		mIsSolved = true;
+		mIsFinished = true;
 		return true;
 	}
 
@@ -55,7 +124,6 @@ bool SudokuSolver<Rank>::backTracking(int index)
 
 	return false;
 }
-
 template <int Rank>
 bool SudokuSolver<Rank>::DFS(int index)
 {
@@ -129,6 +197,62 @@ bool SudokuSolver<Rank>::DFS(int index)
 	}
 	return false;
 }
+template <int Rank>
+bool SudokuSolver<Rank>::DFSN(int  searchNum) {
+	if (mIsFinished)
+		return true;
+	if (mDqueSudoku.empty())
+		mDqueSudoku.push_back(mSudoku);
+	int curNum = 0;
+	int index = 0;
+
+	while (!mDqueSudoku.empty()) {
+		Sudoku<Rank> sudoku = mDqueSudoku.back();
+		mDqueSudoku.pop_back();
+
+		// find the first unknown cell
+		for (index = 0; index < mTolCell; index++) {
+			if (!sudoku.isCellKnown(index)) {
+				break;
+			}
+		}
+		if (index == mTolCell) {
+			mSudoku = sudoku;
+			mIsFinished = true;
+			mIsSolved = true;
+			return true;
+		}
+		// try all candidates
+		for (num_t i = 1; i <= mRank; i++) {
+			if (sudoku.isCadiExist(index, i)) {
+				// try this candidate
+				if (sudoku.validateCell(index, i)) {
+					// if this candidate is valid, then try next cell
+					sudoku.setCell(index, i);
+					sudoku.setCellKnown(index);
+					mDqueSudoku.push_back(sudoku);
+					curNum++;
+
+					// restore sudoku state
+					sudoku.setCell(index, 0);
+					sudoku.setCellKnown(index, false);
+				}
+			}
+		}
+		if (searchNum > 0 && curNum >= searchNum) {
+			return false;
+		}
+	}
+
+	mIsFinished = true;
+	mIsSolved = false;
+	return true;
+
+}
+
+
+
+
 
 template class SudokuSolver<9>;
 template class SudokuSolver<16>;

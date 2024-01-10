@@ -113,7 +113,47 @@ int Sudoku<Rank>::rc2idx(int row, int col)
 {
 	return row * mRank + col;
 }
-
+template <int Rank>
+std::string Sudoku<Rank>::toString()
+{
+	std::string str;
+	switch (mRank)
+	{
+	case 9:
+		for (int i = 0; i < mTolCell; i++) {
+			if (mData[i] > 0) {
+				str += mData[i] + '0';
+			}
+			else {
+				str += '.';
+			}
+		}
+		break;
+	case 16:
+	case 25:
+		for (int i = 0; i < mTolCell; i++) {
+			if (mData[i] > 0) {
+				str += mData[i] + 'A' - 1;
+			}
+			else {
+				str += '.';
+			}
+		}
+		break;
+	default:
+		break;
+	}
+	return str;
+}
+template <int Rank>
+int Sudoku<Rank>::unfillCellNum()
+{
+	int num = 0;
+	for (int i = 0; i < mTolCell; i++) {
+		num += !isKnown[i];
+	}
+	return num;
+}
 
 template <int Rank>
 void Sudoku<Rank>::setCell(int index, num_t num)

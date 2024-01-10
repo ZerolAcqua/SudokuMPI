@@ -1,6 +1,6 @@
 #pragma once
 #include <math.h>
-
+#include <string>
 
 typedef unsigned char num_t;
 typedef int cadi_t;
@@ -42,6 +42,8 @@ public:
 
 	void printSudoku();
 	int rc2idx(int row, int col);
+	std::string toString();
+	int unfillCellNum();
 
 	void setCell(int index, num_t num);
 	void setCell(int row, int col, num_t num);
